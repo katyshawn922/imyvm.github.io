@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+<!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-103573929-2', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    <meta name="google-site-verification" content="N8_MvBvdHISDEG90DlgSQJu5qiAnjtjnkjBw3khsuBU">
+    
+    
+    
+    
+    <title>RouterOS基于目标地址的国内外分流 | Dayn&#39;Night | 深夜便利店</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="RouterOS">
+    <meta name="description" content="前期准备硬件 Mikrotik 路由器 × 1 –&amp;gt; 请配置完能上网之后直接阅读RouterOS 配置部分 或 RouterOS 虚拟机 × 1 –&amp;gt; 请完整阅读  软件 可用的 L2TP / PPTP / SSTP 账号 × 1 【可选】Winbox 点此下载 v3.17 (Windows 平台，用于登录并管理 RouterOS。macOS 和 Linux 需要使用 Wine 或虚拟">
+<meta name="keywords" content="RouterOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RouterOS基于目标地址的国内外分流">
+<meta property="og:url" content="http://daynnight.io/posts/536e8593/index.html">
+<meta property="og:site_name" content="Dayn&#39;Night">
+<meta property="og:description" content="前期准备硬件 Mikrotik 路由器 × 1 –&amp;gt; 请配置完能上网之后直接阅读RouterOS 配置部分 或 RouterOS 虚拟机 × 1 –&amp;gt; 请完整阅读  软件 可用的 L2TP / PPTP / SSTP 账号 × 1 【可选】Winbox 点此下载 v3.17 (Windows 平台，用于登录并管理 RouterOS。macOS 和 Linux 需要使用 Wine 或虚拟">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://i.loli.net/2018/08/20/5b7a9968889e3.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/20/5b7a9e0ac07e8.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/20/5b7aa6952bc4c.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/20/5b7aa147a94b8.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/20/5b7aa147d66fa.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/20/5b7aa1490a32e.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/20/5b7aa14935408.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/20/5b7aaa3431c43.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/20/5b7aac8de7157.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/21/5b7b8591c58e0.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/21/5b7b851f440de.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/21/5b7b8f85cf697.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/21/5b7b8f85d16d4.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/21/5b7b90ea920e4.png">
+<meta property="og:updated_time" content="2018-08-21T05:00:00.355Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RouterOS基于目标地址的国内外分流">
+<meta name="twitter:description" content="前期准备硬件 Mikrotik 路由器 × 1 –&amp;gt; 请配置完能上网之后直接阅读RouterOS 配置部分 或 RouterOS 虚拟机 × 1 –&amp;gt; 请完整阅读  软件 可用的 L2TP / PPTP / SSTP 账号 × 1 【可选】Winbox 点此下载 v3.17 (Windows 平台，用于登录并管理 RouterOS。macOS 和 Linux 需要使用 Wine 或虚拟">
+<meta name="twitter:image" content="https://i.loli.net/2018/08/20/5b7a9968889e3.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="Dayn&#39;Night" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Sconosciuti</h5>
+          <a href="mailto:imyvm@outlook.com" title="imyvm@outlook.com" class="mail">imyvm@outlook.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                档案室
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/imyvm" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">RouterOS基于目标地址的国内外分流</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">RouterOS基于目标地址的国内外分流</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-08-21T08:59:06.000Z" itemprop="datePublished" class="page-time">
+  2018-08-21
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#前期准备"><span class="post-toc-number">1.</span> <span class="post-toc-text">前期准备</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#硬件"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">硬件</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#软件"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">软件</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#RouterOS-安装"><span class="post-toc-number">2.</span> <span class="post-toc-text">RouterOS 安装</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#本地"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">本地</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#云"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">云</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#安装脚本"><span class="post-toc-number">2.2.1.</span> <span class="post-toc-text">安装脚本</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#功能"><span class="post-toc-number">2.2.1.1.</span> <span class="post-toc-text">功能</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#安装过程"><span class="post-toc-number">2.2.1.2.</span> <span class="post-toc-text">安装过程</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#脚本服务商及系统支持"><span class="post-toc-number">2.2.1.3.</span> <span class="post-toc-text">脚本服务商及系统支持</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Digital-Ocean"><span class="post-toc-number">2.2.1.3.1.</span> <span class="post-toc-text">Digital Ocean</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#阿里云"><span class="post-toc-number">2.2.1.3.2.</span> <span class="post-toc-text">阿里云</span></a></li></ol></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#登录-RouterOS"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">登录 RouterOS</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Winbox"><span class="post-toc-number">2.3.1.</span> <span class="post-toc-text">Winbox</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SSH"><span class="post-toc-number">2.3.2.</span> <span class="post-toc-text">SSH</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#网页"><span class="post-toc-number">2.3.3.</span> <span class="post-toc-text">网页</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#获取试用-License"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">获取试用 License</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#RouterOS-配置"><span class="post-toc-number">3.</span> <span class="post-toc-text">RouterOS 配置</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#连接-L2TP"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">连接 L2TP</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#获取中国全部-IP-地址并导入"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">获取中国全部 IP 地址并导入</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置-Mangle-规则"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">设置 Mangle 规则</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置路由规则"><span class="post-toc-number">3.4.</span> <span class="post-toc-text">设置路由规则</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#配置防污染-DNS"><span class="post-toc-number">3.5.</span> <span class="post-toc-text">配置防污染 DNS</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置完成"><span class="post-toc-number">3.6.</span> <span class="post-toc-text">设置完成</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-RouterOS基于目标地址的国内外分流"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">RouterOS基于目标地址的国内外分流</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-08-21 16:59:06" datetime="2018-08-21T08:59:06.000Z"  itemprop="datePublished">2018-08-21</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><h2 id="硬件"><a href="#硬件" class="headerlink" title="硬件"></a>硬件</h2><ul>
+<li><strong>Mikrotik 路由器</strong> × 1 –&gt; 请配置完能上网之后直接阅读<strong>RouterOS 配置</strong>部分</li>
+<li>或 RouterOS 虚拟机 × 1 –&gt; 请完整阅读</li>
+</ul>
+<h2 id="软件"><a href="#软件" class="headerlink" title="软件"></a>软件</h2><ul>
+<li>可用的 L2TP / PPTP / SSTP 账号 × 1</li>
+<li>【可选】Winbox <a href="https://download.mikrotik.com/routeros/winbox/3.17/winbox.exe" target="_blank" rel="noopener">点此下载 v3.17</a> (Windows 平台，用于登录并管理 RouterOS。macOS 和 Linux 需要使用 Wine 或虚拟机)</li>
+</ul>
+<p><strong>推荐</strong> L2TP over IPSec。</p>
+<h1 id="RouterOS-安装"><a href="#RouterOS-安装" class="headerlink" title="RouterOS 安装"></a>RouterOS 安装</h1><h2 id="本地"><a href="#本地" class="headerlink" title="本地"></a>本地</h2><p><strong>VMWare / VMWare ESXi</strong>: <a href="https://wiki.mikrotik.com/wiki/Manual:CHR_VMWare_installation" target="_blank" rel="noopener">https://wiki.mikrotik.com/wiki/Manual:CHR_VMWare_installation</a></p>
+<p><strong>Hyper-V</strong>: <a href="https://wiki.mikrotik.com/wiki/Manual:CHR_Hyper-V_installation" target="_blank" rel="noopener">https://wiki.mikrotik.com/wiki/Manual:CHR_Hyper-V_installation</a></p>
+<p><strong>VirtualBox</strong>: <a href="https://wiki.mikrotik.com/wiki/Manual:CHR_VirtualBox_installation" target="_blank" rel="noopener">https://wiki.mikrotik.com/wiki/Manual:CHR_VirtualBox_installation</a></p>
+<p><strong>ProxMox</strong>: <a href="https://wiki.mikrotik.com/wiki/Manual:CHR_ProxMox_installation" target="_blank" rel="noopener">https://wiki.mikrotik.com/wiki/Manual:CHR_ProxMox_installation</a></p>
+<h2 id="云"><a href="#云" class="headerlink" title="云"></a>云</h2><h3 id="安装脚本"><a href="#安装脚本" class="headerlink" title="安装脚本"></a>安装脚本</h3><h4 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h4><ul>
+<li>设置默认网关、路由（如果接口名称非 <code>eth0</code> 请手动更改脚本第 4 行）</li>
+<li>更改默认用户名及密码防止被空密码登录</li>
+<li>禁用 Telnet、FTP 及 API 端口</li>
+<li>更改 SSH 默认端口</li>
+<li>设置 DNS 服务器为 <code>1.1.1.1</code></li>
+<li>设置 NAT 规则</li>
+<li>设定时区及 NTP 对时（使用 <code>ntp1.aliyun.com</code>及 <code>ntp2.aliyun.com</code>，值需为 IP 形式）</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">wget https://download2.mikrotik.com/routeros/6.42.7/chr-6.42.7.img.zip -O chr.img.zip &amp;&amp; \</span><br><span class="line">gunzip -c chr.img.zip &gt; chr.img &amp;&amp; \</span><br><span class="line">mount -o loop,offset=33554944 chr.img /mnt &amp;&amp; \</span><br><span class="line">ADDRESS=`ip addr show eth0 | grep global | cut -d<span class="string">' '</span> -f 6 | head -n 1` &amp;&amp; \</span><br><span class="line">GATEWAY=`ip route list | grep default | cut -d<span class="string">' '</span> -f 3` &amp;&amp; \</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"/ip address add address=<span class="variable">$ADDRESS</span> interface=[/interface ethernet find where name=ether1]</span></span><br><span class="line"><span class="string">/ip route add gateway=<span class="variable">$GATEWAY</span></span></span><br><span class="line"><span class="string">/user set [find name="</span>admin<span class="string">"] name="</span>root<span class="string">" password="</span>V2ex!<span class="string">"</span></span><br><span class="line"><span class="string">/ip service disable telnet,ftp,api,api-ssl</span></span><br><span class="line"><span class="string">/ip service set ssh port=36234</span></span><br><span class="line"><span class="string">/ip dns set servers=1.1.1.1</span></span><br><span class="line"><span class="string">/ip firewall nat add chain=srcnat action=masquerade</span></span><br><span class="line"><span class="string">/system clock set time-zone-name="</span>Asia/Shanghai<span class="string">"</span></span><br><span class="line"><span class="string">/system ntp client set primary-ntp="</span>120.25.115.20<span class="string">" secondary-ntp="</span>203.107.6.88<span class="string">" enabled=yes</span></span><br><span class="line"><span class="string">"</span> &gt; /mnt/rw/autorun.scr &amp;&amp; \</span><br><span class="line">umount /mnt &amp;&amp; \</span><br><span class="line"><span class="built_in">echo</span> u &gt; /proc/sysrq-trigger &amp;&amp; \</span><br><span class="line">dd <span class="keyword">if</span>=chr.img bs=1M of=/dev/vda &amp;&amp; \</span><br><span class="line">reboot</span><br></pre></td></tr></table></figure>
+<h4 id="安装过程"><a href="#安装过程" class="headerlink" title="安装过程"></a>安装过程</h4><blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/20/5b7a9968889e3.png" alt="Digital Ocean 安装 RouterOS" title="">
+                </div>
+                <div class="image-caption">Digital Ocean 安装 RouterOS</div>
+            </figure>
+</blockquote>
+<blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/20/5b7a9e0ac07e8.png" alt="成功登录 脚本执行结果日志" title="">
+                </div>
+                <div class="image-caption">成功登录 脚本执行结果日志</div>
+            </figure>
+</blockquote>
+<h4 id="脚本服务商及系统支持"><a href="#脚本服务商及系统支持" class="headerlink" title="脚本服务商及系统支持"></a>脚本服务商及系统支持</h4><p>列出的为经过测试可用的服务商及对应系统版本。<strong>未列出的并不代表不可用</strong>。</p>
+<h5 id="Digital-Ocean"><a href="#Digital-Ocean" class="headerlink" title="Digital Ocean"></a>Digital Ocean</h5><ul>
+<li>Ubuntu 18.04</li>
+<li>Ubuntu 16.04.4</li>
+</ul>
+<h5 id="阿里云"><a href="#阿里云" class="headerlink" title="阿里云"></a>阿里云</h5><ul>
+<li>CentOS7</li>
+</ul>
+<blockquote>
+<p>阿里云专有网络和经典网络均可用。</p>
+</blockquote>
+<p>欢迎加群 <a href="https://telegram.me/routeroscn" target="_blank" rel="noopener">@routeroscn</a> 反馈可用服务商和使用问题。</p>
+<h2 id="登录-RouterOS"><a href="#登录-RouterOS" class="headerlink" title="登录 RouterOS"></a>登录 RouterOS</h2><h3 id="Winbox"><a href="#Winbox" class="headerlink" title="Winbox"></a>Winbox</h3><p>请参阅文章开始“<strong>前期准备</strong>”部分下载 Winbox。</p>
+<ul>
+<li><p>打开 Winbox，填入路由器 IP、用户名及密码，点击 Add/Set 保存，然后点击 Connect 连接。</p>
+<blockquote>
+<p>如果一字未改使用了本文中的脚本，用户名应为<code>root</code>，密码为<code>V2ex!</code>，注意感叹号为英文字符。</p>
+</blockquote>
+</li>
+<li><p>连接完成。</p>
+</li>
+</ul>
+<h3 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h3><p>SSH 方式为命令行操作，不建议没有接触过 RouterOS 的用户使用，请使用 Winbox。</p>
+<h3 id="网页"><a href="#网页" class="headerlink" title="网页"></a>网页</h3><p>在浏览器中输入路由器的 IP 即可。打开网页后输入用户名密码登录。</p>
+<p><strong>注意：登录后不要进行 Quick Set，请点击右上角的 WebFig 进入完整的设置页面。</strong></p>
+<blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/20/5b7aa6952bc4c.png" alt="请点击 WebFig" title="">
+                </div>
+                <div class="image-caption">请点击 WebFig</div>
+            </figure>
+</blockquote>
+<h2 id="获取试用-License"><a href="#获取试用-License" class="headerlink" title="获取试用 License"></a>获取试用 License</h2><p>虚拟机安装完成后默认是 Free License，每接口限速 1Mbps。请先去<a href="https://mikrotik.com/client/register" target="_blank" rel="noopener">官网</a>注册一个 Mikrotik 账号，注册完成后前往<code>/system license</code>登录账号获取 60 天的试用，授权级别选择默认 P1。P1 每端口限速 1Gbps，P10 为 10Gbps。</p>
+<blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/20/5b7aa147a94b8.png" alt="单击 Renew License" title="">
+                </div>
+                <div class="image-caption">单击 Renew License</div>
+            </figure>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/20/5b7aa147d66fa.png" alt="填入 Mikrotik 账号密码后单击 Start" title="">
+                </div>
+                <div class="image-caption">填入 Mikrotik 账号密码后单击 Start</div>
+            </figure>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/20/5b7aa1490a32e.png" alt="稍等片刻后左下角显示 done" title="">
+                </div>
+                <div class="image-caption">稍等片刻后左下角显示 done</div>
+            </figure>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/20/5b7aa14935408.png" alt="License 获取成功" title="">
+                </div>
+                <div class="image-caption">License 获取成功</div>
+            </figure>
+</blockquote>
+<h1 id="RouterOS-配置"><a href="#RouterOS-配置" class="headerlink" title="RouterOS 配置"></a>RouterOS 配置</h1><h2 id="连接-L2TP"><a href="#连接-L2TP" class="headerlink" title="连接 L2TP"></a>连接 L2TP</h2><p>本节以 L2TP 和 Winbox 为例子。PPTP / SSTP / IP Tunnel / Gre Tunnel 等同理。</p>
+<p>本节以<strong>在云上部署的 RouterOS 为例</strong>。家庭环境下的 RouterOS 大同小异。</p>
+<ul>
+<li>点击<code>PPP</code>，选择 <code>L2TP Client</code></li>
+</ul>
+<blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/20/5b7aaa3431c43.png" alt="/interface l2tp-client add" title="">
+                </div>
+                <div class="image-caption">/interface l2tp-client add</div>
+            </figure>
+</blockquote>
+<ul>
+<li><code>General</code> 选项卡中的 Name 可以随意填写。</li>
+<li><code>Dial Out</code> 选项卡中请填写 L2TP 服务器地址、L2TP 用户名及密码。如有 IPSec 请选中并填写密钥。</li>
+<li>点击 <code>OK</code> 完成设置。</li>
+</ul>
+<blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/20/5b7aac8de7157.png" alt="连接状态及当前路由表" title="">
+                </div>
+                <div class="image-caption">连接状态及当前路由表</div>
+            </figure>
+</blockquote>
+<h2 id="获取中国全部-IP-地址并导入"><a href="#获取中国全部-IP-地址并导入" class="headerlink" title="获取中国全部 IP 地址并导入"></a>获取中国全部 IP 地址并导入</h2><ul>
+<li>请在 Linux 中执行以下命令。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"/ip firewall address-list"</span> &gt; cnlist.src &amp;&amp; \</span><br><span class="line">curl <span class="string">'https://ispip.clang.cn/all_cn_cidr.txt'</span> \</span><br><span class="line">  | awk -F\, <span class="string">'&#123;print "add address=" $0 " disabled=no list=cnlist" &#125;'</span> &gt;&gt; cnlist.src</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>在当前目录创建 <code>cnlist.src</code>文件，从<code>https://ispip.clang.cn/</code>获取中国 IP 段数据。</p>
+</blockquote>
+<ul>
+<li>将生成的 <code>cnlist.src</code>文件通过 <code>Files - Upload</code>上传至 RouterOS。</li>
+</ul>
+<blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/21/5b7b8591c58e0.png" alt="cnlist.src 上传中" title="">
+                </div>
+                <div class="image-caption">cnlist.src 上传中</div>
+            </figure>
+</blockquote>
+<ul>
+<li>打开命令行窗口（New Terminal），输入 <code>import cnlist.src</code>导入数据。</li>
+</ul>
+<blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/21/5b7b851f440de.png" alt="导入成功截图" title="">
+                </div>
+                <div class="image-caption">导入成功截图</div>
+            </figure>
+</blockquote>
+<h2 id="设置-Mangle-规则"><a href="#设置-Mangle-规则" class="headerlink" title="设置 Mangle 规则"></a>设置 Mangle 规则</h2><ul>
+<li><p>如果使用本地实体 Mikrotik 路由器，默认网关为 <code>192.168.88.1</code>，局域网段 <code>192.168.88.0/24</code></p>
+<p>请在命令行中执行以下命令。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/ip firewall mangle add chain=prerouting src-address=192.168.88.0/24 dst-address-list=!cnlist action=mark-routing new-routing-mark=vpn</span><br></pre></td></tr></table></figure>
+<blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/21/5b7b8f85cf697.png" alt="Mangle 规则" title="">
+                </div>
+                <div class="image-caption">Mangle 规则</div>
+            </figure>
+</blockquote>
+<p>该命令为源地址为本地局域网，目标地址不在 cnlist 之内的数据包打上包标记 <code>vpn</code>，你也可以将这个包标记改成你喜欢的名称，比如<code>freedom</code>，但<strong>请和下一小节中的路由规则相同</strong>。</p>
+<blockquote>
+<p>如果你有一台下载机，不想让下载机的流量走 VPN，可以为其分配一个静态 IP，例如 <code>192.168.88.2</code>。</p>
+<p>然后更改 Mangle 规则为 <code>src-address=192.168.88.3-192.168.88.254</code></p>
+</blockquote>
+</li>
+<li><p>如果使用本地虚拟机，请修改以下命令使其符合实际情况。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/ip firewall mangle add chain=prerouting src-address=源地址，即需要分流的客户端地址 dst-address-list=!cnlist action=mark-routing new-routing-mark=vpn</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果使用云端虚拟机，请修改以下命令使其符合实际情况。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/ip firewall mangle add chain=prerouting src-address=源地址，即需要分流的客户端地址 dst-address-list=!cnlist action=mark-routing new-routing-mark=vpn</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：云端 RouterOS 还需要另外设置 VPN 服务端并分配客户端地址段。假设我启用了 L2TP 服务器，分配给客户端的地址段为 <code>192.168.125.0/24</code>，那么上述命令中源地址写成 <code>192.168.125.0/24</code>即可。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="设置路由规则"><a href="#设置路由规则" class="headerlink" title="设置路由规则"></a>设置路由规则</h2><p>请在命令行中执行以下命令。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/ip route add dst-address=0.0.0.0/0 gateway=l2tp-out1 check-gateway=ping distance=1 routing-mark=vpn</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意，这里的 <code>routing-mark</code> 必须和上一小节中你设置的包标记名称相同。</p>
+</blockquote>
+<blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/21/5b7b8f85d16d4.png" alt="路由规则" title="">
+                </div>
+                <div class="image-caption">路由规则</div>
+            </figure>
+</blockquote>
+<p>这里配置好之后，国内外分流就已经生效了。</p>
+<h2 id="配置防污染-DNS"><a href="#配置防污染-DNS" class="headerlink" title="配置防污染 DNS"></a>配置防污染 DNS</h2><p>这里仅提供思路，不作具体展开。DNS 请填写至<code>IP - DNS</code>内。</p>
+<ul>
+<li>使用公开的防污染 DNS。<ul>
+<li>优点：即填即用，无需维护，方便省事。</li>
+<li>缺点：国内网站解析到的节点可能不是离你最近的节点，国外网站解析到的节点可能不是离你的 VPN 服务器最近的节点。</li>
+</ul>
+</li>
+<li>自建防污染 DNS。<ul>
+<li>优点：可以针对个人情况进行优化，国内国外均可解析到最快最好的节点。</li>
+<li>缺点：需要配置维护，需要额外的虚拟机/VPS/路由器/etc</li>
+</ul>
+</li>
+<li>使用提供非<code>53</code>端口的 DNS，如 <code>5353</code> 端口，然后设置防火墙规则将 53 端口的 DNS 请求重定向到 5353。<ul>
+<li>优点：无需维护，方便省事。</li>
+<li>缺点：可能会受网络环境影响。</li>
+</ul>
+</li>
+</ul>
+<h2 id="设置完成"><a href="#设置完成" class="headerlink" title="设置完成"></a>设置完成</h2><p>请访问 <a href="http://ip111.cn" target="_blank" rel="noopener">ip111.cn</a> 查看是否显示两个不同的 IP。</p>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/21/5b7b90ea920e4.png" alt="检测结果" title="">
+                </div>
+                <div class="image-caption">检测结果</div>
+            </figure>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2018-08-21T05:00:00.355Z" itemprop="dateUpdated">2018-08-21 13:00:00</time>
+</span><br>
+
+
+        
+    </div>
+    
+    <footer>
+        <a href="http://daynnight.io">
+            <img src="/img/avatar.jpg" alt="Sconosciuti">
+            Sconosciuti
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RouterOS/">RouterOS</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://daynnight.io/posts/536e8593/&title=《RouterOS基于目标地址的国内外分流》 — Dayn'Night&pic=http://daynnight.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://daynnight.io/posts/536e8593/&title=《RouterOS基于目标地址的国内外分流》 — Dayn'Night&source=买点什么好呢？" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://daynnight.io/posts/536e8593/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《RouterOS基于目标地址的国内外分流》 — Dayn'Night&url=http://daynnight.io/posts/536e8593/&via=http://daynnight.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://daynnight.io/posts/536e8593/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+
+
+    
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitment_thread"></div>
+    <link rel="stylesheet" href="//unpkg.com/gitment/style/default.css">
+    <script src="//unpkg.com/gitment/dist/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'imyvm',
+            repo: 'imyvm.github.io',
+            oauth: {
+                client_id: '744c103774b187603121',
+                client_secret: '45073002e8f6be2fec6fa5372fab87370ccb1e1f',
+            },
+        })
+        gitment.render('comments')
+    </script>
+</section>
+
+
+
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢大爷~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/wechat.png" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Sconosciuti &copy; 2018</span>
+            <span>
+                
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://daynnight.io/posts/536e8593/&title=《RouterOS基于目标地址的国内外分流》 — Dayn'Night&pic=http://daynnight.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://daynnight.io/posts/536e8593/&title=《RouterOS基于目标地址的国内外分流》 — Dayn'Night&source=买点什么好呢？" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://daynnight.io/posts/536e8593/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《RouterOS基于目标地址的国内外分流》 — Dayn'Night&url=http://daynnight.io/posts/536e8593/&via=http://daynnight.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://daynnight.io/posts/536e8593/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK4AAACuCAAAAACKZ2kyAAABw0lEQVR42u3aza6CQAwGUN//pbnbmxjga8uMmpxZGTRwcNH07/WKz/F2zq7///b9N+/XXysOLi7umHtcnrNHTuhnn5M74OLi7uSeRYzrW6/4/Y0NFxf3R7h5KLy+Ay4u7u9y89Kll+7g4uJ+D3dFGOoVV4/Vari4uANu3qVc93lJfxcXF7fFPYonT1x6jdGbp+Pi4m7hzsuYXuuk91xcXNz93OvGRN46mZcxhVoNFxd3MXeSpiQvljRGmykOLi7uo9wk0OSBqbeklf8RuLi4e7jVxalqaJsMV8rFDy4u7qPcXuOjWo/kqxtR6wQXF3cjN0dMmh29tQxcXNz93ASUv1I+jq0GU1xc3D3cKm4+QO2teuDi4n6WmzdSq+tWk1VRXFzcT3HzVkXeCpmgC/1dXFzcZdxq2jEZ01abI7i4uPu5veTjqVQmH7Tg4uKu5h7Fk79eLyCO/iFcXNyHuKMiZBxB88WO8svg4uKOudXglQxW8yFrtcmCi4u7k5sHmsmQNU+PTq/g4uL+IHeyWlHYHcPFxf1ibt7auAlPl8nNY4EMFxe3yO01N6spS7LGcRPUcHFxt3AfmNPGKUsv0cHFxd3I/QOXe9hXKPl/OwAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
