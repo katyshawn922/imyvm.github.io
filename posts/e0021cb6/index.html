@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+<!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-103573929-2', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    <meta name="google-site-verification" content="N8_MvBvdHISDEG90DlgSQJu5qiAnjtjnkjBw3khsuBU">
+    
+    
+    
+    
+    <title>RouterOS基于Layer7的Netflix智能分流 | Dayn&#39;Night | 深夜便利店</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="RouterOS">
+    <meta name="description" content="适用对象 有 A, B两条线路，A 延迟低速度快但不能看 Netflix，B 延迟高速度一般但可以看 Netflix。 有 A, B两条线路，A 流量多但不能看 Netflix，B 流量少可以看 Netflix。 我就是想看 A 区的限定内容，但我又不想全局走 A 的代理。 不折腾会死综合征。 ……  本方案优点 精确识别 Netflix 的流量并路由至期望的线路。  使用 Layer 7 正则匹">
+<meta name="keywords" content="RouterOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RouterOS基于Layer7的Netflix智能分流">
+<meta property="og:url" content="http://daynnight.io/posts/e0021cb6/index.html">
+<meta property="og:site_name" content="Dayn&#39;Night">
+<meta property="og:description" content="适用对象 有 A, B两条线路，A 延迟低速度快但不能看 Netflix，B 延迟高速度一般但可以看 Netflix。 有 A, B两条线路，A 流量多但不能看 Netflix，B 流量少可以看 Netflix。 我就是想看 A 区的限定内容，但我又不想全局走 A 的代理。 不折腾会死综合征。 ……  本方案优点 精确识别 Netflix 的流量并路由至期望的线路。  使用 Layer 7 正则匹">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://i.loli.net/2018/08/23/5b7e04007df28.png">
+<meta property="og:image" content="https://i.loli.net/2018/08/23/5b7e1c0621722.png">
+<meta property="og:updated_time" content="2018-08-23T02:48:46.196Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RouterOS基于Layer7的Netflix智能分流">
+<meta name="twitter:description" content="适用对象 有 A, B两条线路，A 延迟低速度快但不能看 Netflix，B 延迟高速度一般但可以看 Netflix。 有 A, B两条线路，A 流量多但不能看 Netflix，B 流量少可以看 Netflix。 我就是想看 A 区的限定内容，但我又不想全局走 A 的代理。 不折腾会死综合征。 ……  本方案优点 精确识别 Netflix 的流量并路由至期望的线路。  使用 Layer 7 正则匹">
+<meta name="twitter:image" content="https://i.loli.net/2018/08/23/5b7e04007df28.png">
+    
+        <link rel="alternate" type="application/atom+xml" title="Dayn&#39;Night" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Sconosciuti</h5>
+          <a href="mailto:imyvm@outlook.com" title="imyvm@outlook.com" class="mail">imyvm@outlook.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                档案室
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/imyvm" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">RouterOS基于Layer7的Netflix智能分流</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">RouterOS基于Layer7的Netflix智能分流</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-08-23T02:49:24.000Z" itemprop="datePublished" class="page-time">
+  2018-08-23
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#适用对象"><span class="post-toc-number">1.</span> <span class="post-toc-text">适用对象</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#本方案优点"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">本方案优点</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#本方案缺点"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">本方案缺点</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#前期准备"><span class="post-toc-number">2.</span> <span class="post-toc-text">前期准备</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#RouterOS-配置"><span class="post-toc-number">3.</span> <span class="post-toc-text">RouterOS 配置</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#获取-Netflix-IP-段"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">获取 Netflix IP 段</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置-Layer-7-规则"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">设置 Layer 7 规则</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置-Mangle-规则"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">设置 Mangle 规则</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#自动添加-Netflix-IP-地址"><span class="post-toc-number">3.3.1.</span> <span class="post-toc-text">自动添加 Netflix IP 地址</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#为-Netflix-流量打上路由标记"><span class="post-toc-number">3.3.2.</span> <span class="post-toc-text">为 Netflix 流量打上路由标记</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置路由规则"><span class="post-toc-number">3.4.</span> <span class="post-toc-text">设置路由规则</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置完成"><span class="post-toc-number">3.5.</span> <span class="post-toc-text">设置完成</span></a></li></ol></li></ol>
+        </nav>
+    </aside>
+
+
+<article id="post-RouterOS基于Layer7的Netflix智能分流"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">RouterOS基于Layer7的Netflix智能分流</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-08-23 10:49:24" datetime="2018-08-23T02:49:24.000Z"  itemprop="datePublished">2018-08-23</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <h1 id="适用对象"><a href="#适用对象" class="headerlink" title="适用对象"></a>适用对象</h1><ul>
+<li>有 <code>A, B</code>两条线路，A 延迟低速度快但不能看 Netflix，B 延迟高速度一般但可以看 Netflix。</li>
+<li>有 <code>A, B</code>两条线路，A 流量多但不能看 Netflix，B 流量少可以看 Netflix。</li>
+<li>我就是想看 A 区的限定内容，但我又不想全局走 A 的代理。</li>
+<li>不折腾会死综合征。</li>
+<li>……</li>
+</ul>
+<h2 id="本方案优点"><a href="#本方案优点" class="headerlink" title="本方案优点"></a>本方案优点</h2><ul>
+<li><p><strong>精确识别 Netflix 的流量并路由至期望的线路。</strong></p>
+<blockquote>
+<p>使用 Layer 7 正则匹配。</p>
+</blockquote>
+</li>
+<li><p><strong>无需更改本机 DNS。</strong></p>
+<blockquote>
+<p>改个 DNS 就能解锁流媒体服务？我就是不想改怎么办？</p>
+</blockquote>
+</li>
+<li><p><strong>地址条目少，性能好。</strong></p>
+<blockquote>
+<p>相比导入全部 AWS IP 段的暴力做法更为优雅。只导入访问需要的地址条目且有效期过后自动移除。</p>
+</blockquote>
+</li>
+<li><p><strong>使用时间越久，效果越好。</strong></p>
+<blockquote>
+<p>使用时间越久，精准导入的地址条目越多，下次打开 Netflix 分配的服务器 IP 命中率就越高，效果越好。有点像热力链，地址条目中的 IP 有有效期，当 IP 在有效期内被访问时，自动刷新有效期，有效期结束后自动移除。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="本方案缺点"><a href="#本方案缺点" class="headerlink" title="本方案缺点"></a>本方案缺点</h2><ul>
+<li><p>刚设置完成后一段时间打开 Netflix 比较慢。</p>
+<blockquote>
+<p>假设现在有 <code>A</code>, <code>B</code>两条线路，<code>A</code> 为普通线路，<code>B</code> 可看 Netflix。</p>
+<p>一开始设备访问 Netflix ，请求走的 <code>A</code> 线路，请求发出去之后 RouterOS 发现是 Netflix 的包，于是进行匹配并路由至 <code>B</code> 线路。</p>
+<p>而源地址发生变化导致后续的包全部被丢弃了。</p>
+<p><strong>解决办法</strong>是耐心<strong>等待数据包重传</strong>，大概十几二十秒就会打开。或者等个几秒让 RouterOS 添加好地址，直接<strong>关掉页面再开</strong>即可。</p>
+<p>该情况<strong>仅发生</strong>在第一次打开 Netflix 网页时，后续如果一直看片不关闭网页不会有此现象。</p>
+</blockquote>
+</li>
+<li><p>切换区域时打开 Netflix 比较慢。</p>
+<blockquote>
+<p>比如一直用美国线路看美区，有一天换成了香港线路看港区。港区 CDN 用的 PCCW，在美区获得的 <code>address-list</code> 并不适用于港区，需要重新识别并添加进地址列表。</p>
+<p>该情况<strong>仅发生</strong>在换区后第一次打开 Netflix 网页时，后续如果一直看片不关闭网页不会有此现象。</p>
+</blockquote>
+</li>
+<li><p><strong>You tell me!</strong></p>
+</li>
+</ul>
+<h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><ul>
+<li style="list-style: none"><input type="checkbox" checked> 已经按照 <a href="https://daynnight.io/posts/536e8593/">RouterOS基于目标地址的国内外分流</a> 配置完成。</li>
+<li style="list-style: none"><input type="checkbox" checked> 可用的 Netflix 账号。</li>
+<li style="list-style: none"><input type="checkbox" checked> 加入 Telegram 群 <a href="https://telegram.me/routeroscn" target="_blank" rel="noopener">@[CN] RouterOS 交流群</a></li>
+</ul>
+<h1 id="RouterOS-配置"><a href="#RouterOS-配置" class="headerlink" title="RouterOS 配置"></a>RouterOS 配置</h1><h2 id="获取-Netflix-IP-段"><a href="#获取-Netflix-IP-段" class="headerlink" title="获取 Netflix IP 段"></a>获取 Netflix IP 段</h2><blockquote>
+<p>限于技术水平，这里采用的方法可能不是最佳实践，有更好用的 IP 来源或更好的处理方式请联系<a href="https://telegram.me/sconosciuti" target="_blank" rel="noopener">我</a>。</p>
+</blockquote>
+<ul>
+<li><p>在 <code>bgp.he.net</code> 搜索 Netflix 的 IP 段。<a href="https://bgp.he.net/search?search%5Bsearch%5D=netflix&amp;commit=Search" target="_blank" rel="noopener">一键直达</a></p>
+</li>
+<li><p>全选并复制整个页面的内容，粘贴并保存为文本文件，例如<code>netflixraw.txt</code>。</p>
+</li>
+<li><p>在 Linux 上安装 <strong>Aggregate</strong>，一个合并 IP 段的工具。</p>
+<blockquote>
+<p>Optimise a list of route prefixes to help make nice short filters.</p>
+</blockquote>
+<ul>
+<li><p><strong>Debian, Ubuntu</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install aggregate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Redhat, CentOS, Fedora</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install aggregate</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>安装完成后执行以下命令，请确认 <code>netflixraw.txt</code> 在当前目录。</p>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"/ip firewall address-list"</span> &gt; netflix.src &amp;&amp; \</span><br><span class="line">egrep -o <span class="string">'^([0-9]&#123;1,3&#125;\.)&#123;3&#125;[0-9]&#123;1,3&#125;(\/([0-9]|[1-2][0-9]|3[0-2]))'</span> netflixraw.txt \</span><br><span class="line">| aggregate -q | sort -n \</span><br><span class="line">| awk -F\, <span class="string">'&#123;print "add address=" $0 " disabled=no list=netflix" &#125;'</span> &gt;&gt; netflix.src</span><br></pre></td></tr></table></figure>
+<ul>
+<li><blockquote>
+<p><code>egrep</code> 正则匹配 IP 段，<code>aggregate</code> 对输出的 IP 段进行合并优化，<code>sort</code> 将结果排序，<code>awk</code> 输出结果到文件。</p>
+</blockquote>
+</li>
+<li><p>将<code>netflix.src</code> 文件导入至 RouterOS 即可。<strong>懒得动手操作的可以直接复制粘贴下面的。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">/ip firewall address-list</span><br><span class="line">add address=23.246.0.0/18 disabled=no list=netflix</span><br><span class="line">add address=37.77.184.0/21 disabled=no list=netflix</span><br><span class="line">add address=45.57.0.0/17 disabled=no list=netflix</span><br><span class="line">add address=64.120.128.0/17 disabled=no list=netflix</span><br><span class="line">add address=66.197.128.0/17 disabled=no list=netflix</span><br><span class="line">add address=69.53.224.0/19 disabled=no list=netflix</span><br><span class="line">add address=103.87.204.0/22 disabled=no list=netflix</span><br><span class="line">add address=108.175.32.0/20 disabled=no list=netflix</span><br><span class="line">add address=179.49.23.0/24 disabled=no list=netflix</span><br><span class="line">add address=185.2.220.0/22 disabled=no list=netflix</span><br><span class="line">add address=185.9.188.0/22 disabled=no list=netflix</span><br><span class="line">add address=192.173.64.0/18 disabled=no list=netflix</span><br><span class="line">add address=198.38.96.0/19 disabled=no list=netflix</span><br><span class="line">add address=198.45.48.0/20 disabled=no list=netflix</span><br><span class="line">add address=207.45.72.0/22 disabled=no list=netflix</span><br><span class="line">add address=208.75.76.0/24 disabled=no list=netflix</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>数据抓取时间：2018/08/23 07:43</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="设置-Layer-7-规则"><a href="#设置-Layer-7-规则" class="headerlink" title="设置 Layer 7 规则"></a>设置 Layer 7 规则</h2><p><strong>请在 RouterOS 的命令行中执行以下命令。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/ip firewall layer7-protocol add name=&quot;netflix&quot; \</span><br><span class="line">regexp=&quot;netflix.com|nflxext.com|nflxvideo.net|nflxso.net|nflximg.net|netflix.net|netflixdnstest[0-9].com&quot;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/23/5b7e04007df28.png" alt="Netflix L7 匹配规则" title="">
+                </div>
+                <div class="image-caption">Netflix L7 匹配规则</div>
+            </figure>
+</blockquote>
+<h2 id="设置-Mangle-规则"><a href="#设置-Mangle-规则" class="headerlink" title="设置 Mangle 规则"></a>设置 Mangle 规则</h2><h3 id="自动添加-Netflix-IP-地址"><a href="#自动添加-Netflix-IP-地址" class="headerlink" title="自动添加 Netflix IP 地址"></a>自动添加 Netflix IP 地址</h3><p><strong>请在 RouterOS 的命令行中执行以下命令。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/ip firewall mangle add chain=prerouting src-address=&quot;需要分流的客户端地址&quot; \</span><br><span class="line">protocol=tcp dst-port=443 layer7-protocol=netflix \</span><br><span class="line">action=add-dst-to-address-list address-list=netflix address-list-timeout=90d</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里解释下 <code>address-list-timeout</code> 这个参数。</p>
+<p>引自 Wiki：如果未指定该参数，则该地址将永久保存到硬盘中。如果指定了该参数，则地址将存储在内存中，并在系统重启后删除。</p>
+<p>意思就是断电或手动重启后这些地址就会丢失。如果喜欢天天定时重启路由或家里经常断电的话……将这个参数设成 <code>address-list-timeout=none-static</code> 即可。后果是地址列表会慢慢变大不会缩小。</p>
+</blockquote>
+<blockquote>
+<p>这个值<strong>建议</strong> <code>7d</code> 以上，这样命中地址条目的概率比较大。</p>
+</blockquote>
+<h3 id="为-Netflix-流量打上路由标记"><a href="#为-Netflix-流量打上路由标记" class="headerlink" title="为 Netflix 流量打上路由标记"></a>为 Netflix 流量打上路由标记</h3><p><strong>请在 RouterOS 的命令行中执行以下命令。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/ip firewall mangle add chain=prerouting src-address=&quot;需要分流的客户端地址&quot; dst-address-list=netflix action=mark-routing new-routing-mark=nfvpn</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>最后一个参数 <code>new-routing-mark</code> 路由标记可以设成自己喜欢的，这里命名为 <code>nfvpn</code></p>
+</blockquote>
+<h2 id="设置路由规则"><a href="#设置路由规则" class="headerlink" title="设置路由规则"></a>设置路由规则</h2><p><strong>请在 RouterOS 的命令行中执行以下命令。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/ip route add dst-address=0.0.0.0/0 gateway=&quot;可看 Netflix 的接口&quot; check-gateway=ping distance=1 routing-mark=nfvpn</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>参数 <code>routing-mark</code> 请和上方 <code>new-routing-mark</code> 的值相同。</p>
+</blockquote>
+<h2 id="设置完成"><a href="#设置完成" class="headerlink" title="设置完成"></a>设置完成</h2><p>效果图如下。有效期我设置了 7 天。</p>
+<p>有新增 IP 的时候打开速度会慢一点，只要进了地址列表，速度立马就上来了。</p>
+<blockquote>
+<figure class="image-bubble">
+                <div class="img-lightbox">
+                    <div class="overlay"></div>
+                    <img src="https://i.loli.net/2018/08/23/5b7e1c0621722.png" alt="address list 截图对比" title="">
+                </div>
+                <div class="image-caption">address list 截图对比</div>
+            </figure></blockquote>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2018-08-23T02:48:46.196Z" itemprop="dateUpdated">2018-08-23 10:48:46</time>
+</span><br>
+
+
+        
+    </div>
+    
+    <footer>
+        <a href="http://daynnight.io">
+            <img src="/img/avatar.jpg" alt="Sconosciuti">
+            Sconosciuti
+        </a>
+    </footer>
+</blockquote>
+
+        
+<div class="page-reward">
+    <a id="rewardBtn" href="javascript:;" class="page-reward-btn waves-effect waves-circle waves-light">赏</a>
+</div>
+
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RouterOS/">RouterOS</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://daynnight.io/posts/e0021cb6/&title=《RouterOS基于Layer7的Netflix智能分流》 — Dayn'Night&pic=http://daynnight.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://daynnight.io/posts/e0021cb6/&title=《RouterOS基于Layer7的Netflix智能分流》 — Dayn'Night&source=买点什么好呢？" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://daynnight.io/posts/e0021cb6/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《RouterOS基于Layer7的Netflix智能分流》 — Dayn'Night&url=http://daynnight.io/posts/e0021cb6/&via=http://daynnight.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://daynnight.io/posts/e0021cb6/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/posts/536e8593/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">RouterOS基于目标地址的国内外分流</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+<section class="comments" id="comments">
+    <div id="gitment_thread"></div>
+    <link rel="stylesheet" href="//unpkg.com/gitment/style/default.css">
+    <script src="//unpkg.com/gitment/dist/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'imyvm',
+            repo: 'imyvm.github.io',
+            oauth: {
+                client_id: '744c103774b187603121',
+                client_secret: '45073002e8f6be2fec6fa5372fab87370ccb1e1f',
+            },
+        })
+        gitment.render('comments')
+    </script>
+</section>
+
+
+
+
+
+
+
+
+
+
+</article>
+
+<div id="reward" class="page-modal reward-lay">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <h3 class="reward-title">
+        <i class="icon icon-quote-left"></i>
+        谢谢大爷~
+        <i class="icon icon-quote-right"></i>
+    </h3>
+    <div class="reward-content">
+        
+        <div class="reward-code">
+            <img id="rewardCode" src="/img/wechat.png" alt="打赏二维码">
+        </div>
+        
+        <label class="reward-toggle">
+            <input id="rewardToggle" type="checkbox" class="reward-toggle-check"
+                data-wechat="/img/wechat.png" data-alipay="/img/alipay.jpg">
+            <div class="reward-toggle-ctrol">
+                <span class="reward-toggle-item wechat">微信</span>
+                <span class="reward-toggle-label"></span>
+                <span class="reward-toggle-item alipay">支付宝</span>
+            </div>
+        </label>
+        
+    </div>
+</div>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Sconosciuti &copy; 2018</span>
+            <span>
+                
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=http://daynnight.io/posts/e0021cb6/&title=《RouterOS基于Layer7的Netflix智能分流》 — Dayn'Night&pic=http://daynnight.io/img/avatar.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=http://daynnight.io/posts/e0021cb6/&title=《RouterOS基于Layer7的Netflix智能分流》 — Dayn'Night&source=买点什么好呢？" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://daynnight.io/posts/e0021cb6/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《RouterOS基于Layer7的Netflix智能分流》 — Dayn'Night&url=http://daynnight.io/posts/e0021cb6/&via=http://daynnight.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=http://daynnight.io/posts/e0021cb6/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAK4AAACuCAAAAACKZ2kyAAABzklEQVR42u3aO27EMAwFwL3/pZ12G1uP1CdeYFQFhmLPNg8ixc8nXtfX+n7yvCd5/tmxcHFxp7nX48o/+fyGu/25ARcX9zz3LjGSPc8xV6UPbLi4uK/nVqMwPzDh4uL+Fjc6iDzG3NEgw8XFneDmMbQv5hbXari4uBPcvEu57+8t/V1cXNwW9yqu/ODSa4wOvo6Li3uEmwfKzE+qtkIGF7S4uLhHuNWRi2rpUi1jmsUPLi7uBm5veKIaVXlrtdnLwcXFXcR9LmDyUqc3fpEHJS4u7hluNe2SkJovpW7fiYuLe5C7+KwU0JNL2UHi4uLiHuTmjYx8T36gGRRUuLi4R7i9oatqOZQcmBbUari4uIu4SYhURyjyca5m7uLi4m7mVkepqoeV+UnSwZ0PLi7uEW4SZKuuW3ojILi4uCe5vSZp/ry3c8GdMC4u7gQ3ia3qkGXvcDP4L1xc3M3cq7jyV/fCrnDewcXF3cbtFSG9AqYwZtEa9sLFxV3LrZYfMyMXvcvaQvri4uIu5eZBM1Pq9PYMuji4uLgv4CYtld5oRfTjcXFxX88tX5HG3y3c/ODi4m7jlkcni0HWK41wcXH/i7uq6Vm9js0POri4uAe5f5PmZ9bayg4wAAAAAElFTkSuQmCC" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: true };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>

@@ -32,13 +32,13 @@ ga('send', 'pageview');
     
     
     <meta name="keywords" content="RouterOS">
-    <meta name="description" content="前期准备硬件 Mikrotik 路由器 × 1 –&amp;gt; 请配置完能上网之后直接阅读RouterOS 配置部分 或 RouterOS 虚拟机 × 1 –&amp;gt; 请完整阅读  软件 可用的 L2TP / PPTP / SSTP 账号 × 1 【可选】Winbox 点此下载 v3.17 (Windows 平台，用于登录并管理 RouterOS。macOS 和 Linux 需要使用 Wine 或虚拟">
+    <meta name="description" content="前期准备硬件 Mikrotik 路由器 × 1 –&amp;gt; 请配置完能上网之后直接阅读RouterOS 配置部分 或 RouterOS 虚拟机 × 1 –&amp;gt; 请完整阅读  软件 可用的 L2TP / PPTP / SSTP 账号 × 1 Winbox 点此下载 v3.17 (Windows 平台，用于登录并管理 RouterOS。macOS 和 Linux 需要使用 Wine 或虚拟机)">
 <meta name="keywords" content="RouterOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RouterOS基于目标地址的国内外分流">
 <meta property="og:url" content="http://daynnight.io/posts/536e8593/index.html">
 <meta property="og:site_name" content="Dayn&#39;Night">
-<meta property="og:description" content="前期准备硬件 Mikrotik 路由器 × 1 –&amp;gt; 请配置完能上网之后直接阅读RouterOS 配置部分 或 RouterOS 虚拟机 × 1 –&amp;gt; 请完整阅读  软件 可用的 L2TP / PPTP / SSTP 账号 × 1 【可选】Winbox 点此下载 v3.17 (Windows 平台，用于登录并管理 RouterOS。macOS 和 Linux 需要使用 Wine 或虚拟">
+<meta property="og:description" content="前期准备硬件 Mikrotik 路由器 × 1 –&amp;gt; 请配置完能上网之后直接阅读RouterOS 配置部分 或 RouterOS 虚拟机 × 1 –&amp;gt; 请完整阅读  软件 可用的 L2TP / PPTP / SSTP 账号 × 1 Winbox 点此下载 v3.17 (Windows 平台，用于登录并管理 RouterOS。macOS 和 Linux 需要使用 Wine 或虚拟机)">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://i.loli.net/2018/08/20/5b7a9968889e3.png">
 <meta property="og:image" content="https://i.loli.net/2018/08/20/5b7a9e0ac07e8.png">
@@ -54,10 +54,10 @@ ga('send', 'pageview');
 <meta property="og:image" content="https://i.loli.net/2018/08/21/5b7b8f85cf697.png">
 <meta property="og:image" content="https://i.loli.net/2018/08/21/5b7b8f85d16d4.png">
 <meta property="og:image" content="https://i.loli.net/2018/08/21/5b7b90ea920e4.png">
-<meta property="og:updated_time" content="2018-08-21T05:00:00.355Z">
+<meta property="og:updated_time" content="2018-08-22T22:47:14.032Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RouterOS基于目标地址的国内外分流">
-<meta name="twitter:description" content="前期准备硬件 Mikrotik 路由器 × 1 –&amp;gt; 请配置完能上网之后直接阅读RouterOS 配置部分 或 RouterOS 虚拟机 × 1 –&amp;gt; 请完整阅读  软件 可用的 L2TP / PPTP / SSTP 账号 × 1 【可选】Winbox 点此下载 v3.17 (Windows 平台，用于登录并管理 RouterOS。macOS 和 Linux 需要使用 Wine 或虚拟">
+<meta name="twitter:description" content="前期准备硬件 Mikrotik 路由器 × 1 –&amp;gt; 请配置完能上网之后直接阅读RouterOS 配置部分 或 RouterOS 虚拟机 × 1 –&amp;gt; 请完整阅读  软件 可用的 L2TP / PPTP / SSTP 账号 × 1 Winbox 点此下载 v3.17 (Windows 平台，用于登录并管理 RouterOS。macOS 和 Linux 需要使用 Wine 或虚拟机)">
 <meta name="twitter:image" content="https://i.loli.net/2018/08/20/5b7a9968889e3.png">
     
         <link rel="alternate" type="application/atom+xml" title="Dayn&#39;Night" href="/atom.xml">
@@ -177,7 +177,7 @@ ga('send', 'pageview');
     <aside class="post-widget">
         <nav class="post-toc-wrap post-toc-shrink" id="post-toc">
             <h4>TOC</h4>
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#前期准备"><span class="post-toc-number">1.</span> <span class="post-toc-text">前期准备</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#硬件"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">硬件</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#软件"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">软件</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#RouterOS-安装"><span class="post-toc-number">2.</span> <span class="post-toc-text">RouterOS 安装</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#本地"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">本地</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#云"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">云</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#安装脚本"><span class="post-toc-number">2.2.1.</span> <span class="post-toc-text">安装脚本</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#功能"><span class="post-toc-number">2.2.1.1.</span> <span class="post-toc-text">功能</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#安装过程"><span class="post-toc-number">2.2.1.2.</span> <span class="post-toc-text">安装过程</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#脚本服务商及系统支持"><span class="post-toc-number">2.2.1.3.</span> <span class="post-toc-text">脚本服务商及系统支持</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Digital-Ocean"><span class="post-toc-number">2.2.1.3.1.</span> <span class="post-toc-text">Digital Ocean</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#阿里云"><span class="post-toc-number">2.2.1.3.2.</span> <span class="post-toc-text">阿里云</span></a></li></ol></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#登录-RouterOS"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">登录 RouterOS</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Winbox"><span class="post-toc-number">2.3.1.</span> <span class="post-toc-text">Winbox</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SSH"><span class="post-toc-number">2.3.2.</span> <span class="post-toc-text">SSH</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#网页"><span class="post-toc-number">2.3.3.</span> <span class="post-toc-text">网页</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#获取试用-License"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">获取试用 License</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#RouterOS-配置"><span class="post-toc-number">3.</span> <span class="post-toc-text">RouterOS 配置</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#连接-L2TP"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">连接 L2TP</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#获取中国全部-IP-地址并导入"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">获取中国全部 IP 地址并导入</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置-Mangle-规则"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">设置 Mangle 规则</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置路由规则"><span class="post-toc-number">3.4.</span> <span class="post-toc-text">设置路由规则</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#配置防污染-DNS"><span class="post-toc-number">3.5.</span> <span class="post-toc-text">配置防污染 DNS</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置完成"><span class="post-toc-number">3.6.</span> <span class="post-toc-text">设置完成</span></a></li></ol></li></ol>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#前期准备"><span class="post-toc-number">1.</span> <span class="post-toc-text">前期准备</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#硬件"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">硬件</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#软件"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">软件</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Telegram"><span class="post-toc-number">1.3.</span> <span class="post-toc-text">Telegram</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#RouterOS-安装"><span class="post-toc-number">2.</span> <span class="post-toc-text">RouterOS 安装</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#本地"><span class="post-toc-number">2.1.</span> <span class="post-toc-text">本地</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#云"><span class="post-toc-number">2.2.</span> <span class="post-toc-text">云</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#安装脚本"><span class="post-toc-number">2.2.1.</span> <span class="post-toc-text">安装脚本</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#功能"><span class="post-toc-number">2.2.1.1.</span> <span class="post-toc-text">功能</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#安装过程"><span class="post-toc-number">2.2.1.2.</span> <span class="post-toc-text">安装过程</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#脚本服务商及系统支持"><span class="post-toc-number">2.2.1.3.</span> <span class="post-toc-text">脚本服务商及系统支持</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#Digital-Ocean"><span class="post-toc-number">2.2.1.3.1.</span> <span class="post-toc-text">Digital Ocean</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#阿里云"><span class="post-toc-number">2.2.1.3.2.</span> <span class="post-toc-text">阿里云</span></a></li></ol></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#登录-RouterOS"><span class="post-toc-number">2.3.</span> <span class="post-toc-text">登录 RouterOS</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#Winbox"><span class="post-toc-number">2.3.1.</span> <span class="post-toc-text">Winbox</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#SSH"><span class="post-toc-number">2.3.2.</span> <span class="post-toc-text">SSH</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#网页"><span class="post-toc-number">2.3.3.</span> <span class="post-toc-text">网页</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#获取试用-License"><span class="post-toc-number">2.4.</span> <span class="post-toc-text">获取试用 License</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#RouterOS-配置"><span class="post-toc-number">3.</span> <span class="post-toc-text">RouterOS 配置</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#连接-L2TP"><span class="post-toc-number">3.1.</span> <span class="post-toc-text">连接 L2TP</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#获取中国全部-IP-地址并导入"><span class="post-toc-number">3.2.</span> <span class="post-toc-text">获取中国全部 IP 地址并导入</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置-Mangle-规则"><span class="post-toc-number">3.3.</span> <span class="post-toc-text">设置 Mangle 规则</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置路由规则"><span class="post-toc-number">3.4.</span> <span class="post-toc-text">设置路由规则</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#配置防污染-DNS"><span class="post-toc-number">3.5.</span> <span class="post-toc-text">配置防污染 DNS</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#设置完成"><span class="post-toc-number">3.6.</span> <span class="post-toc-text">设置完成</span></a></li></ol></li></ol>
         </nav>
     </aside>
 
@@ -207,9 +207,10 @@ ga('send', 'pageview');
 </ul>
 <h2 id="软件"><a href="#软件" class="headerlink" title="软件"></a>软件</h2><ul>
 <li>可用的 L2TP / PPTP / SSTP 账号 × 1</li>
-<li>【可选】Winbox <a href="https://download.mikrotik.com/routeros/winbox/3.17/winbox.exe" target="_blank" rel="noopener">点此下载 v3.17</a> (Windows 平台，用于登录并管理 RouterOS。macOS 和 Linux 需要使用 Wine 或虚拟机)</li>
+<li>Winbox <a href="https://download.mikrotik.com/routeros/winbox/3.17/winbox.exe" target="_blank" rel="noopener">点此下载 v3.17</a> (Windows 平台，用于登录并管理 RouterOS。macOS 和 Linux 需要使用 Wine 或虚拟机)</li>
 </ul>
 <p><strong>推荐</strong> L2TP over IPSec。</p>
+<h2 id="Telegram"><a href="#Telegram" class="headerlink" title="Telegram"></a>Telegram</h2><p>加群 <a href="https://telegram.me/routeroscn" target="_blank" rel="noopener">@routeroscn</a> 以获得群内各路大佬的帮助。</p>
 <h1 id="RouterOS-安装"><a href="#RouterOS-安装" class="headerlink" title="RouterOS 安装"></a>RouterOS 安装</h1><h2 id="本地"><a href="#本地" class="headerlink" title="本地"></a>本地</h2><p><strong>VMWare / VMWare ESXi</strong>: <a href="https://wiki.mikrotik.com/wiki/Manual:CHR_VMWare_installation" target="_blank" rel="noopener">https://wiki.mikrotik.com/wiki/Manual:CHR_VMWare_installation</a></p>
 <p><strong>Hyper-V</strong>: <a href="https://wiki.mikrotik.com/wiki/Manual:CHR_Hyper-V_installation" target="_blank" rel="noopener">https://wiki.mikrotik.com/wiki/Manual:CHR_Hyper-V_installation</a></p>
 <p><strong>VirtualBox</strong>: <a href="https://wiki.mikrotik.com/wiki/Manual:CHR_VirtualBox_installation" target="_blank" rel="noopener">https://wiki.mikrotik.com/wiki/Manual:CHR_VirtualBox_installation</a></p>
@@ -308,7 +309,7 @@ ga('send', 'pageview');
             </figure>
 </blockquote>
 <h1 id="RouterOS-配置"><a href="#RouterOS-配置" class="headerlink" title="RouterOS 配置"></a>RouterOS 配置</h1><h2 id="连接-L2TP"><a href="#连接-L2TP" class="headerlink" title="连接 L2TP"></a>连接 L2TP</h2><p>本节以 L2TP 和 Winbox 为例子。PPTP / SSTP / IP Tunnel / Gre Tunnel 等同理。</p>
-<p>本节以<strong>在云上部署的 RouterOS 为例</strong>。家庭环境下的 RouterOS 大同小异。</p>
+<p>本节截图以<strong>在云上部署的 RouterOS 为例</strong>。家庭环境下的 RouterOS 大同小异。</p>
 <ul>
 <li>点击<code>PPP</code>，选择 <code>L2TP Client</code></li>
 </ul>
@@ -338,12 +339,16 @@ ga('send', 'pageview');
 <h2 id="获取中国全部-IP-地址并导入"><a href="#获取中国全部-IP-地址并导入" class="headerlink" title="获取中国全部 IP 地址并导入"></a>获取中国全部 IP 地址并导入</h2><ul>
 <li>请在 Linux 中执行以下命令。</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"/ip firewall address-list"</span> &gt; cnlist.src &amp;&amp; \</span><br><span class="line">curl <span class="string">'https://ispip.clang.cn/all_cn_cidr.txt'</span> \</span><br><span class="line">  | awk -F\, <span class="string">'&#123;print "add address=" $0 " disabled=no list=cnlist" &#125;'</span> &gt;&gt; cnlist.src</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"/ip firewall address-list"</span> &gt; cnlist.src &amp;&amp; \</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"remove [find name=cnlist]"</span> &gt;&gt; cnlist.src &amp;&amp; \</span><br><span class="line">curl <span class="string">'https://ispip.clang.cn/all_cn_cidr.txt'</span> \</span><br><span class="line">  | awk -F\, <span class="string">'&#123;print "add address=" $0 " disabled=no list=cnlist" &#125;'</span> &gt;&gt; cnlist.src</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>在当前目录创建 <code>cnlist.src</code>文件，从<code>https://ispip.clang.cn/</code>获取中国 IP 段数据。</p>
+<p>在当前目录创建 <code>cnlist.src</code>文件，从<code>https://ispip.clang.cn/</code>获取中国 IP 段数据并写入。</p>
+<p>因 IP 数据是一直在变动的，建议至少一年更新一次数据，即执行上述命令并导入到 RouterOS。</p>
+<p>导入时 CPU 占用可能会瞬间飙升至 100%。</p>
 </blockquote>
 <ul>
-<li>将生成的 <code>cnlist.src</code>文件通过 <code>Files - Upload</code>上传至 RouterOS。</li>
+<li><p>将生成的 <code>cnlist.src</code>文件通过 <code>Files - Upload</code>上传至 RouterOS。</p>
+<p><del>你要是觉得麻烦，也可以直接复制<code>cnlist.src</code>的文件内容，打开 RouterOS 的命令行粘贴进去。然后就可以欣赏像瀑布一样的 Terminal 了。</del></p>
+</li>
 </ul>
 <blockquote>
 <figure class="image-bubble">
@@ -367,7 +372,7 @@ ga('send', 'pageview');
             </figure>
 </blockquote>
 <h2 id="设置-Mangle-规则"><a href="#设置-Mangle-规则" class="headerlink" title="设置 Mangle 规则"></a>设置 Mangle 规则</h2><ul>
-<li><p>如果使用本地实体 Mikrotik 路由器，默认网关为 <code>192.168.88.1</code>，局域网段 <code>192.168.88.0/24</code></p>
+<li><p>如果使用<strong>本地实体 Mikrotik 路由器</strong>，默认网关为 <code>192.168.88.1</code>，局域网段 <code>192.168.88.0/24</code></p>
 <p>请在命令行中执行以下命令。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/ip firewall mangle add chain=prerouting src-address=192.168.88.0/24 dst-address-list=!cnlist action=mark-routing new-routing-mark=vpn</span><br></pre></td></tr></table></figure>
 <blockquote>
@@ -385,13 +390,16 @@ ga('send', 'pageview');
 <p>然后更改 Mangle 规则为 <code>src-address=192.168.88.3-192.168.88.254</code></p>
 </blockquote>
 </li>
-<li><p>如果使用本地虚拟机，请修改以下命令使其符合实际情况。</p>
+<li><p>如果使用<strong>本地虚拟机</strong>，请修改以下命令使其符合实际情况。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/ip firewall mangle add chain=prerouting src-address=源地址，即需要分流的客户端地址 dst-address-list=!cnlist action=mark-routing new-routing-mark=vpn</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>如果使用云端虚拟机，请修改以下命令使其符合实际情况。</p>
+<li><p>如果使用<strong>云端虚拟机</strong>，请修改以下命令使其符合实际情况。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/ip firewall mangle add chain=prerouting src-address=源地址，即需要分流的客户端地址 dst-address-list=!cnlist action=mark-routing new-routing-mark=vpn</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>注意：云端 RouterOS 还需要另外设置 VPN 服务端并分配客户端地址段。假设我启用了 L2TP 服务器，分配给客户端的地址段为 <code>192.168.125.0/24</code>，那么上述命令中源地址写成 <code>192.168.125.0/24</code>即可。</p>
+</blockquote>
+<blockquote>
+<p>如果使用 Gre Tunnel / IP Tunnel ，源地址填写另一端的网段。</p>
 </blockquote>
 </li>
 </ul>
@@ -414,7 +422,7 @@ ga('send', 'pageview');
 <ul>
 <li>使用公开的防污染 DNS。<ul>
 <li>优点：即填即用，无需维护，方便省事。</li>
-<li>缺点：国内网站解析到的节点可能不是离你最近的节点，国外网站解析到的节点可能不是离你的 VPN 服务器最近的节点。</li>
+<li>缺点：国内网站解析到的节点可能不是离你最近的节点，国外网站解析到的节点可能不是离你的 VPN 服务器最近的节点。简而言之就是速度和延迟不理想。</li>
 </ul>
 </li>
 <li>自建防污染 DNS。<ul>
@@ -425,6 +433,11 @@ ga('send', 'pageview');
 <li>使用提供非<code>53</code>端口的 DNS，如 <code>5353</code> 端口，然后设置防火墙规则将 53 端口的 DNS 请求重定向到 5353。<ul>
 <li>优点：无需维护，方便省事。</li>
 <li>缺点：可能会受网络环境影响。</li>
+</ul>
+</li>
+<li>使用<code>1.1.1.1</code>等 DNS，并设置防火墙规则重定向 DNS 请求走 VPN。（dst-nat）<ul>
+<li>优点：同上。</li>
+<li>缺点：VPN 掉线后 DNS 也随之挂掉。（可以设置脚本监控 VPN 接口状态，掉线后自动切换 DNS 服务器和相关防火墙规则）</li>
 </ul>
 </li>
 </ul>
@@ -444,7 +457,7 @@ ga('send', 'pageview');
     <div class="content">
         
 <span class="post-time">
-    最后更新时间：<time datetime="2018-08-21T05:00:00.355Z" itemprop="dateUpdated">2018-08-21 13:00:00</time>
+    最后更新时间：<time datetime="2018-08-22T22:47:14.032Z" itemprop="dateUpdated">2018-08-23 06:47:14</time>
 </span><br>
 
 
@@ -523,6 +536,19 @@ ga('send', 'pageview');
     </div>
 
     
+<nav class="post-nav flex-row flex-justify-between">
+  
+    <div class="waves-block waves-effect prev">
+      <a href="/posts/e0021cb6/" id="post-prev" class="post-nav-link">
+        <div class="tips"><i class="icon icon-angle-left icon-lg icon-pr"></i> Prev</div>
+        <h4 class="title">RouterOS基于Layer7的Netflix智能分流</h4>
+      </a>
+    </div>
+  
+
+  
+</nav>
+
 
 
     
